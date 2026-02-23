@@ -2,8 +2,7 @@ target C{
     single-threaded: true
 }
 
-//return boolean val to det if the weight is above desired threshold
-main reactor{
+reactor LoadCell{
     
 
 }

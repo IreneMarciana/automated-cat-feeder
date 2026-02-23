@@ -1,11 +1,15 @@
 target C{
     single-threaded: true
 }
-
+import StepperMotor from "lib/motor.lf";
+import LoadCell from "lib/loadcell.lf";
 //using boolean from loadcell, spin motor or leave be
 
 //email notif of feeding?
 main reactor{
     
+
+
+
 
 }
