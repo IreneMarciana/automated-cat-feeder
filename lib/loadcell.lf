@@ -1,9 +1,15 @@
 target C{
     single-threaded: true
 }
-
+//sudo ./hx711_test 5 6 1 0
 reactor LoadCell{
     output weight: double;
-    
+    timer t (1 sec, 2 sec);
+
+
+    reaction(t)->weight {=
+        weight = 0.0; //TODO: read from load cell
+    =}
+
 
 }
