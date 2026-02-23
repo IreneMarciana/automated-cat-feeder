@@ -3,6 +3,7 @@ target C{
 }
 
 reactor LoadCell{
+    output weight: double;
     
 
 }
