@@ -28,7 +28,7 @@ main reactor {
         // fullstep -> 1/32step
         HR8825_SetMicroStep(SOFTWARD, "fullstep");
         // backward/forward, steps, speed(1=fast, 5=slow)
-        HR8825_TurnStep(BACKWARD, 6144, 1);
+        HR8825_TurnStep(BACKWARD, 6144, 5);
         HR8825_Stop();
     =}
 
