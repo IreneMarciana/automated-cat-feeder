@@ -1,17 +1,75 @@
 target C{
-    single-threaded: true
+    single-threaded: true,
+    cmake-include: ["../c_lib/hx711/scale.cmake"],
+    files: ["../c_lib/hx711/gb_commons.c", "../c_lib/hx711/gb_commons.h", "../c_lib/hx711/hx711.c", 
+            "../c_lib/hx711/hx711.h"]
 }
-//sudo ./hx711_test 5 6 1 0
+//sudo ./hx711_test 5 6 10
+
+preamble {=
+    #include "hx711.h"
+    #include "gb_commons.h"
+    #include <stdio.h> //printf()
+    #include <stdlib.h> //exit()
+=}
+
 reactor LoadCell{
+    input zero_scale: bool;
+    input clock_pin: int;
+    input data_pin: int;
+    input samples: int;
+
+    state hx: HX711; 
+    
+
     output weight: double; //grams
     timer t (1 sec, 2 sec);
-    input zero_scale: bool;
+    
+    reaction(startup) {=
+        clock_pin = 5;
+        data_pin = 6;
+        samples=10;
+        /*if not 
+        main reactor {
+            sensor = new HX711(clock_pin = 5, data_pin = 6)
+        }*/
 
-    reaction()
+        unsigned char clk = (unsigned char)self->clock_pin;
+        unsigned char dat = (unsigned char)self->data_pin;
+        unsigned int samp = (unsigned int)self->clock_pin;
+
+        err = initHX711(&self->hx, clk, dat);
+        if (err)
+        {
+            printf("\n!!! Failed to init HX711 struct !!!\n");
+        }
+
+        setupGPIO(&self->hx);
+
+        reset(&self->hx);
+        if (!samples)
+        {
+            samples = 1;
+        }
+
+        reaction(zero_scale);
+    =}
+
+
+    reaction(zero_scale)->weight {=
+        err = zeroScale(&self->hx);
+        if (err)
+        {
+            printf("\n!!! Failed to zero the scale.\n");
+            return 1;
+        }
+        printf("\n Zero scale is done!");
+        weight = 0.0; 
+    =}
 
 
     reaction(t)->weight {=
-        weight = 0.0; //TODO: read from load cell
+        weight = 0.0; //todo- read from load cell
     =}
 
 
