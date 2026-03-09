@@ -1,7 +1,7 @@
 target C{
     single-threaded: true,
     cmake-include: ["../c_lib/hx711/scale.cmake"],
-    files: ["../c_lib/hx711/gb_commons.c", "../c_lib/hx711/gb_commons.h", "../c_lib/hx711/hx711.c", 
+    files: ["../c_lib/hx711/gb_common.c", "../c_lib/hx711/gb_common.h", "../c_lib/hx711/hx711.c", 
             "../c_lib/hx711/hx711.h"]
 }
 //sudo ./hx711_test 5 6 10
