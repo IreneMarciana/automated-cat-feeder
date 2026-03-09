@@ -64,7 +64,10 @@ reactor LoadCell{
         printf("\n Raw data is: %ld", raw_data);
     =}
 
-
+    reaction(shutdown)  {=
+        printf("\nShutting down\n");
+        cleanupGPIO(&self->hx);
+    =}
 
 
 }
