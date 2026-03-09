@@ -20,10 +20,9 @@ reactor LoadCell{
     input samples: int;
 
     state hx: HX711; 
-    
 
     output weight: double; //grams
-    timer t (1 sec, 2 sec);
+    timer t (1 sec, 1 sec);
     
     reaction(startup) {=
         clock_pin = 5;
@@ -36,7 +35,8 @@ reactor LoadCell{
 
         unsigned char clk = (unsigned char)self->clock_pin;
         unsigned char dat = (unsigned char)self->data_pin;
-        unsigned int samp = (unsigned int)self->clock_pin;
+        unsigned int samp = (unsigned int)self->samples;
+        int err;
 
         err = initHX711(&self->hx, clk, dat);
         if (err)
@@ -45,31 +45,23 @@ reactor LoadCell{
         }
 
         setupGPIO(&self->hx);
-
         reset(&self->hx);
-        if (!samples)
-        {
-            samples = 1;
-        }
 
-        reaction(zero_scale);
-    =}
-
-
-    reaction(zero_scale)->weight {=
         err = zeroScale(&self->hx);
         if (err)
         {
             printf("\n!!! Failed to zero the scale.\n");
-            return 1;
+            return;
         }
         printf("\n Zero scale is done!");
-        weight = 0.0; 
+        weight->value = 0.0; 
+
     =}
 
-
     reaction(t)->weight {=
-        weight = 0.0; //todo- read from load cell
+        raw_data = getRawDataMean(&self->hx, 10);
+        weight->value = raw_data; //todo- read from load cell
+        printf("\n Raw data is: %ld", raw_data);
     =}
 
 
