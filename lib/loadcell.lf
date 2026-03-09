@@ -60,8 +60,9 @@ reactor LoadCell{
 
     reaction(t)->weight {=
         raw_data = getRawDataMean(&self->hx, 10);
-        weight->value = raw_data; //todo- read from load cell
-        printf("\n Raw data is: %ld", raw_data);
+        weight->value = raw_data; 
+        // todo- add calibration to convert raw data to grams
+        printf("\n Current weight is: %ld", raw_data);
     =}
 
     reaction(shutdown)  {=
