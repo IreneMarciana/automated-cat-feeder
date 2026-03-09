@@ -14,7 +14,6 @@ preamble {=
 =}
 
 reactor LoadCell{
-    input zero_scale: bool;
     input clock_pin: int;
     input data_pin: int;
     input samples: int;

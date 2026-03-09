@@ -8,7 +8,13 @@ import LoadCell from "lib/loadcell.lf";
 //email notif of feeding?
 main reactor{
     //motor = new StepperMotor();
-    loadcell = new LoadCell();
+    scale = new LoadCell();
+    
+    reaction(startup) {=
+        printf("Starting main reactor!\n");
+        printf("%d\n", scale->weight->value);
+    =}
+    
 
 
 
