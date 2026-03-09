@@ -54,14 +54,16 @@ reactor LoadCell(
             return;
         }
         printf("\n Zero scale is done!");
-        self->weight->value = 0.0; 
+        //self->weight->value = 0.0; 
+        lf_set(self->_lf_weight, 0.0);
 
     =}
 
     reaction(t)->weight {=
         long raw_data;
         raw_data = getRawDataMean(&self->hx, self->samples);
-        self->weight->value = raw_data; 
+        //self->weight->value = raw_data; 
+        lf_set(self->_lf_weight, (double)raw_data);
         // todo- add calibration to convert raw data to grams
         printf("\n Current weight is: %ld", raw_data);
     =}
