@@ -13,10 +13,14 @@ preamble {=
     #include <stdlib.h> //exit()
 =}
 
-reactor LoadCell{
-    input clock_pin: int;
+reactor LoadCell(
+    clock_pin: int = 5,
+    data_pin: int = 6,
+    samples: int = 10
+){
+    /*input clock_pin: int;
     input data_pin: int;
-    input samples: int;
+    input samples: int;*/
 
     state hx: HX711; 
 
@@ -24,9 +28,6 @@ reactor LoadCell{
     timer t (1 sec, 1 sec);
     
     reaction(startup) {=
-        clock_pin = 5;
-        data_pin = 6;
-        samples=10;
         /*if not 
         main reactor {
             sensor = new HX711(clock_pin = 5, data_pin = 6)
@@ -58,7 +59,8 @@ reactor LoadCell{
     =}
 
     reaction(t)->weight {=
-        raw_data = getRawDataMean(&self->hx, 10);
+        long raw_data;
+        raw_data = getRawDataMean(&self->hx, self->samples);
         weight->value = raw_data; 
         // todo- add calibration to convert raw data to grams
         printf("\n Current weight is: %ld", raw_data);
