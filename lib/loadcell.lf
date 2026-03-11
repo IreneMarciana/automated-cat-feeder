@@ -94,6 +94,9 @@ reactor LoadCell(
         printf("RAW HX711: %d\n", raw);
 
         lf_set(weight, (double)raw);
+        printf("GPIO5: %d  GPIO6: %d\n",
+            getPinState(5),
+            getPinState(6));
     =}
 
     reaction(shutdown)  {=
