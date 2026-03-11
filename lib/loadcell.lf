@@ -88,7 +88,7 @@ reactor LoadCell(
         lf_set(weight, (double)raw_data);
         // todo- add calibration to convert raw data to grams
         printf("\n Current weight is: %ld", raw_data);// or weight->value?*/
-        int raw = getRawData(&self->hx, self->samples);
+        int raw = getRawDataMean(&self->hx, self->samples);
 
         printf("RAW HX711: %d\n", raw);
 
