@@ -14,8 +14,8 @@ preamble {=
 =}
 
 reactor LoadCell(
-    clock_pin: int = 5,
-    data_pin: int = 6,
+    clock_pin: int = 6,
+    data_pin: int = 5,
     samples: int = 10
 ){
     /*input clock_pin: int;
