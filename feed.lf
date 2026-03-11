@@ -12,10 +12,12 @@ main reactor{
     
     reaction(startup) {=
         printf("Starting main reactor!\n");
-        printf("%d\n", scale.weight);
+        //printf("%d\n", scale.weight);
     =}
     
-
+    reaction(scale.weight) {=
+        printf("Weight changed! Current weight is: %f\n", scale.weight->value);
+    =}
 
 
 }
