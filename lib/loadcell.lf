@@ -42,12 +42,20 @@ reactor LoadCell(
             gpio_initialized = 1;
         }
 
+        int priority = 10;
+        
+
         unsigned char clk = (unsigned char)self->clock_pin;
         unsigned char dat = (unsigned char)self->data_pin;
         unsigned int samp = (unsigned int)self->samples;
         int err;
 
         printf("\n!!! Starting loadcell logic !!!\n");
+
+        err = setPriority(priority);
+        if (err) {
+            printf("Failed to set priority\n");
+        }
 
         err = initHX711(&self->hx, clk, dat);
         if (err)
@@ -80,7 +88,7 @@ reactor LoadCell(
         lf_set(weight, (double)raw_data);
         // todo- add calibration to convert raw data to grams
         printf("\n Current weight is: %ld", raw_data);// or weight->value?*/
-        int raw = getRawData(&self->hx);
+        int raw = getRawData(&self->hx, self->samples);
 
         printf("RAW HX711: %d\n", raw);
 
