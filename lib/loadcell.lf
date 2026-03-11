@@ -4,7 +4,9 @@ target C{
     files: ["../c_lib/hx711/gb_common.c", "../c_lib/hx711/gb_common.h", "../c_lib/hx711/hx711.c", 
             "../c_lib/hx711/hx711.h"]
 }
-//sudo ./hx711_test 5 6 10
+//sudo ./hx711_test 5 6 1 0
+// data = 5
+// clock = 6
 
 preamble {=
     #include "hx711.h"
@@ -27,32 +29,25 @@ reactor LoadCell(
     state hx: HX711; 
 
     output weight: double; //grams
+    output low_food: boolean;
     timer t (1 sec, 1 sec);
     
     
 
     reaction(startup)->weight {=
-        /*if not 
-        main reactor {
-            sensor = new HX711(clock_pin = 5, data_pin = 6)
-        }*/
-
         if (!gpio_initialized) {
             setup_io();
             gpio_initialized = 1;
         }
 
         int priority = 10;
-        
-
         unsigned char clk = (unsigned char)self->clock_pin;
         unsigned char dat = (unsigned char)self->data_pin;
         unsigned int samp = (unsigned int)self->samples;
-        int err;
 
         printf("\n!!! Starting loadcell logic !!!\n");
 
-        err = setPriority(priority);
+        int err = setPriority(priority);
         if (err) {
             printf("Failed to set priority\n");
         }
@@ -64,7 +59,7 @@ reactor LoadCell(
         }
 
         setupGPIO(&self->hx);
-        printf("\n!!! GPIO setup is done !!!\n");
+        printf("\n!!! gpio setup is done !!!\n");
         reset(&self->hx);
         printf("\n!!! resetis done !!!\n");
 
@@ -81,20 +76,17 @@ reactor LoadCell(
 
     =}
 
-    reaction(t)->weight {=
-        /*long raw_data;
-        //raw_data = getRawDataMean(&self->hx, self->samples);
-        raw_data = getRawData(&self->hx);
-        //self->weight->value = raw_data; 
+    reaction(t)->weight, low_food {=
+        // todo
+        //1) add calibration to convert raw data to grams
+        //2) add threshold for low food
+        printf("\n Current weight is: %ld", raw_data);// or weight->value?
+        low_food = true;//placeholder
+        int raw_data = getRawDataMean(&self->hx, self->samples);
+        //raw_data = getRawData(&self->hx);
+        printf("data pin state: %d\n", getPinState(self->hx.data_pin));
         lf_set(weight, (double)raw_data);
-        // todo- add calibration to convert raw data to grams
-        printf("\n Current weight is: %ld", raw_data);// or weight->value?*/
-        int raw = getRawDataMean(&self->hx, self->samples);
-        printf("DATA pin state: %d\n", getPinState(self->hx.data_pin));
-        printf("RAW HX711: %d\n", raw);
-
-        lf_set(weight, (double)raw);
-        printf("GPIO5: %d  GPIO6: %d\n",
+        printf("gpio5: %d  gpio6: %d\n",
             getPinState(5),
             getPinState(6));
     =}

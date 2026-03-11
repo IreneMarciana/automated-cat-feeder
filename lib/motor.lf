@@ -13,7 +13,7 @@ preamble {=
     #include <stdlib.h>     //exit()
 =}
 
-main reactor {
+reactor StepperMotor{
 
     reaction(startup) {=
 
