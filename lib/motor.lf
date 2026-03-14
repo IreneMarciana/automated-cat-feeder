@@ -21,22 +21,6 @@ reactor StepperMotor{
     input stop: bool;
     timer cool_down(1 sec, 60 sec);
 
-    initial mode idle{
-        // case 1: weight under threshold, run is true + dispense
-        reaction(run){=
-            printf("Dispense mode has been entered!!\n"); 
-            lf_set_mode(dispense);
-        =}
-        // case 2: weight in threshold, remain idle
-            // no rxn needed!
-        // case 3: weight under threshold, run is false + error
-        reaction(stop){=
-            printf("ERROR: stop signal received.\n"); 
-            lf_set_mode(error);
-        =}
-
-    }
-
     mode dispense{
         reaction(startup){=
             if (DEV_ModuleInit())
@@ -68,6 +52,54 @@ reactor StepperMotor{
             lf_set_mode(idle);
         =}
     }
+
+    initial mode idle{
+        // case 1: weight under threshold, run is true + dispense
+        reaction(run){=
+            printf("Dispense mode has been entered!!\n"); 
+            lf_set_mode(dispense);
+        =}
+        // case 2: weight in threshold, remain idle
+            // no rxn needed!
+        // case 3: weight under threshold, run is false + error
+        reaction(stop){=
+            printf("ERROR: stop signal received.\n"); 
+            lf_set_mode(error);
+        =}
+
+    }
+
+    /*mode dispense{
+        reaction(startup){=
+            if (DEV_ModuleInit())
+            {
+                printf("Exiting; failed to init.\n"); 
+                exit(0);
+            }
+            // Exception handling:ctrl + c
+            //signal(SIGINT, Handler);
+            HR8825_SelectMotor(MOTOR2);
+            // fullstep -> 1/32step
+            HR8825_SetMicroStep(SOFTWARD, "fullstep");
+            // backward/forward, steps, speed(1=fast, 5=slow)
+            HR8825_TurnStep(BACKWARD, 6144, 1);
+            HR8825_Stop();
+        =}
+    }
+
+    mode error{
+        reaction(startup) {=
+            printf("ERROR: weight index out of range; shutting down.\n"); 
+            HR8825_SelectMotor(MOTOR2);
+            HR8825_Stop();
+            DEV_ModuleExit();
+            stop = false; 
+        =}
+        reaction (cool_down) {=
+            printf("Cool down period is over; returning to idle mode.\n"); 
+            lf_set_mode(idle);
+        =}
+    }*/
 
     /*reaction(startup) {=
 
