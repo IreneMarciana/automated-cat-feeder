@@ -21,11 +21,9 @@ reactor StepperMotor{
     input stop: bool;
     timer cool_down(1 sec, 60 sec);
 
-    
-
     initial mode idle {
         // case 1: weight under threshold, run is true + dispense
-        reaction(run)->reset(dispense){=
+        reaction(run)->reset(dispense){=//reaction(reset)??
             if(run->value){
                 printf("Dispense mode has been entered!!\n"); 
                 lf_set_mode(dispense);
@@ -75,27 +73,4 @@ reactor StepperMotor{
         =}
     }
 
-    /*reaction(startup) {=
-
-        if(DEV_ModuleInit())
-        {
-            printf("Exiting; failed to init.\n"); 
-            exit(0);
-        }
-        // Exception handling:ctrl + c
-        //signal(SIGINT, Handler);
-        HR8825_SelectMotor(MOTOR2);
-        // fullstep -> 1/32step
-        HR8825_SetMicroStep(SOFTWARD, "fullstep");
-        // backward/forward, steps, speed(1=fast, 5=slow)
-        HR8825_TurnStep(BACKWARD, 6144, 1);
-        HR8825_Stop();
-    =}
-
-    reaction(shutdown) {=
-        printf("Shutting down\n"); 
-        HR8825_SelectMotor(MOTOR1);
-        HR8825_Stop();
-        DEV_ModuleExit();
-    =}*/
 }
