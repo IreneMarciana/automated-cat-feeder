@@ -4,95 +4,89 @@ target C{
     files: ["../c_lib/hx711/gb_common.c", "../c_lib/hx711/gb_common.h", "../c_lib/hx711/hx711.c", 
             "../c_lib/hx711/hx711.h"]
 }
+//sudo ./hx711_test 5 6 1 0
+// data = 5
+// clock = 6
 
 preamble {=
-#include "hx711.h"
-#include "gb_common.h"
-#include <pthread.h>
-#include <unistd.h>
-#include <stdbool.h>
+    #include "hx711.h"
+    #include "gb_common.h"
+    #include <stdio.h> //printf()
+    #include <stdlib.h> //exit()
 
-static HX711 hx;
-static volatile double last_weight = 0.0;
-static volatile bool low_food_flag = false;
-
-#define LOW_FOOD_THRESHOLD 1000.0 // set your grams threshold
-
-// Thread that continuously reads HX711
-void* hx711_thread(void* arg) {
-    int samples = *(int*)arg;
-
-    while(1) {
-        // Read calibrated data
-        double raw_mean = getDataMean(&hx, samples);
-        double calibrated_weight = raw_mean - hx.offset_A_128;
-
-        last_weight = calibrated_weight;
-
-        // Check low food
-        if (calibrated_weight < LOW_FOOD_THRESHOLD) {
-            low_food_flag = true;
-        } else {
-            low_food_flag = false;
-        }
-
-        usleep(1000); // tight loop, small delay
-    }
-
-    return NULL;
-}
+    static int gpio_initialized = 0;
 =}
 
-reactor LoadCell {
-    state samples: int = 10;
+reactor LoadCell{
+    //(clock_pin: int = 6,
+    //data_pin: int = 5,
+    //samples: int = 10)
 
-    output weight: double;      // grams
+    /*input clock_pin: int;
+    input data_pin: int;
+    input samples: int;*/
+
+    state hx: HX711; 
+
+    output weight: double; //grams
     output low_food: bool;
-
-    timer t(1 sec, 1 sec);
+    timer t (1 sec, 1 sec);
+    
+    
 
     reaction(startup)->weight {=
-        printf("\n!!! Initializing HX711 !!!\n");
-
         int priority = 10;
         int err = setPriority(priority);
-        if (err) {
-            printf("\n!!! Failed to set priority %d !!!\n", priority);
+        if (err)
+        {
+            printf("\n!!! Failed to set process priority to %d\n", priority);
+            //exit();
         }
-
-        // Init HX711
-        err = initHX711(&hx, 6, 5);
-        if (err) {
+        err = initHX711(&self->hx, 6, 5);
+        if (err)
+        {
             printf("\n!!! Failed to init HX711 struct !!!\n");
+            //exit();
         }
+        setupGPIO(&self->hx);
+        printf("\n!!! gpio setup is done !!!\n");
+        reset(&self->hx);
+        printf("\n!!! reset is done !!!\n");
 
-        setupGPIO(&hx);
-        printf("\n!!! GPIO setup is done !!!\n");
-
-        reset(&hx);
-        printf("\n!!! Reset is done !!!\n");
-
-        err = zeroScale(&hx);
-        if (err) {
-            printf("\n!!! Failed to zero the scale !!!\n");
+        getRawData(&self->hx);
+        err = zeroScale(&self->hx);
+        if (err)
+        {
+            printf("\n!!! Failed to zero the scale.\n");
+            //exit();
         }
-        printf("\n!!! Zero scale is done !!!\n");
+        printf("\n!!! zero setup is done !!!\n");
+        //self->weight->value = 0.0; 
+        lf_set(weight, 0.0);
 
-        // Start HX711 reading thread
-        pthread_t thread_id;
-        pthread_create(&thread_id, NULL, hx711_thread, &self->samples);
     =}
 
-    // Reaction to timer: send last read weight and low_food status
     reaction(t)->weight, low_food {=
-        lf_set(weight, last_weight);
-        lf_set(low_food, low_food_flag);
+        // todo
+        //1) add calibration to convert raw data to grams
+        //2) add threshold for low food
+        usleep(50000);
 
-        printf("Weight= %f  LowFood=%s\n", last_weight, low_food_flag ? "YES" : "NO");
+        int raw_data = getRawDataMean(&self->hx, 10);//self->samples);
+        printf("\n Current weight is: %ld", raw_data);// or weight->value?
+        lf_set(low_food, true);//placeholder
+        //raw_data = getRawData(&self->hx);
+        //printf("data pin state: %d\n", getPinState(self->hx.data_pin));
+        lf_set(weight, (double)raw_data);
+        //printf("gpio5: %d  gpio6: %d\n",
+          //  getPinState(5),
+            //getPinState(6));
     =}
 
-    reaction(shutdown) {=
-        printf("\nShutting down HX711\n");
-        cleanGPIO(&hx);
+    reaction(shutdown)  {=
+        printf("\nShutting down\n");
+        cleanGPIO(&self->hx);
     =}
+
+
 }
