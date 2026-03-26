@@ -70,6 +70,8 @@ reactor LoadCell{
         // todo
         //1) add calibration to convert raw data to grams
         //2) add threshold for low food
+        usleep(50000);
+
         int raw_data = getRawDataMean(&self->hx, 10);//self->samples);
         printf("\n Current weight is: %ld", raw_data);// or weight->value?
         lf_set(low_food, true);//placeholder
