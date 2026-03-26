@@ -9,14 +9,14 @@ import LoadCell from "lib/loadcell.lf";
 main reactor{
     state run: bool = false
     motor = new StepperMotor();
-    //balance = new LoadCell();
+    balance = new LoadCell();
     //balance = new LoadCell(clock_pin = 6, data_pin = 5)
     
     reaction(startup)-> motor.run {=
 
         printf("Starting main reactor!\n");
-        //printf("%d\n", balance.weight);
-        lf_set(motor.run, true);
+        printf("%d\n", balance.weight);
+        //lf_set(motor.run, true);
     =}
     
     /*reaction(balance.low_food) {=
