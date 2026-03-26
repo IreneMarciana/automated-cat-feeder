@@ -29,7 +29,7 @@ reactor LoadCell(
     state hx: HX711; 
 
     output weight: double; //grams
-    output low_food: boolean;
+    output low_food: bool;
     timer t (1 sec, 1 sec);
     
     
