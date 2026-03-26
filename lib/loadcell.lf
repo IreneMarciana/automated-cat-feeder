@@ -17,11 +17,11 @@ preamble {=
     static int gpio_initialized = 0;
 =}
 
-reactor LoadCell(
-    clock_pin: int = 6,
-    data_pin: int = 5,
-    samples: int = 10
-){
+reactor LoadCell{
+    //(clock_pin: int = 6,
+    //data_pin: int = 5,
+    //samples: int = 10)
+
     /*input clock_pin: int;
     input data_pin: int;
     input samples: int;*/
@@ -42,7 +42,7 @@ reactor LoadCell(
             printf("\n!!! Failed to set process priority to %d\n", priority);
             //exit();
         }
-        err = initHX711(&self->hx, clock_pin, data_pin);
+        err = initHX711(&self->hx, 6, 5);
         if (err)
         {
             printf("\n!!! Failed to init HX711 struct !!!\n");
@@ -70,7 +70,7 @@ reactor LoadCell(
         // todo
         //1) add calibration to convert raw data to grams
         //2) add threshold for low food
-        int raw_data = getRawDataMean(&self->hx, self->samples);
+        int raw_data = getRawDataMean(&self->hx, 10);//self->samples);
         printf("\n Current weight is: %ld", raw_data);// or weight->value?
         low_food = true;//placeholder
         //raw_data = getRawData(&self->hx);
