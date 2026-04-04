@@ -1,0 +1,14 @@
+target Python
+
+reactor HXReader {
+
+    
+    reaction(startup) {=
+	    from HX711 import SimpleHX711, Rate
+	    self.hx = SimpleHX711(5, 6, 1, 0, Rate.HZ_80)
+    =}
+
+    reaction(timer) {=
+	    print(self.hx.weight())
+    =}
+}
