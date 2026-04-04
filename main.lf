@@ -2,16 +2,23 @@ target Python{
     keepalive: true
 }
 
-main reactor { 
+reactor scale{ 
     timer t(1 sec, 1 sec);
-    output weight: double;
+    output weight
 
-    reaction(startup) {=
+    reaction(startup)->weight {=
 	    from HX711 import SimpleHX711, Rate
 	    self.hx = SimpleHX711(5, 6, 1, 0, Rate.HZ_80)
     =}
 
-    reaction(t) {=
+    reaction(t)->weight {=
 	    print(hx.weight())
     =}
 }
+
+main reactor{
+    s = new scale()
+    print("starting sclae reactor\n")
+    print(s.weight)
+}
+
