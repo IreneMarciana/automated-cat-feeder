@@ -66,17 +66,50 @@ reactor LoadCell{
 =}
 
     reaction(t)->weight, low_food {=
-        // wait for pin to be ready
-        printf("\n waiting for data pin to be ready...\n");
+        printf("\n=== NEW READ CYCLE ===\n");
+
+        // 1. Check pin states BEFORE waiting
+        int state_before = getPinState(self->hx.data_pin);
+        printf("DATA PIN BEFORE WAIT: %d\n", state_before);
+
+        // 2. Wait for ready
+        int wait_count = 0;
         while (getPinState(self->hx.data_pin) == 1) {
             usleep(1000);
+            wait_count++;
+            if (wait_count % 1000 == 0) {
+                printf("...still waiting (%d ms)\n", wait_count);
+            }
         }
 
-        int raw_data = getRawDataMean(&self->hx, 5);
-        printf("\nRaw data: %d\n", raw_data);
+        printf("DATA PIN READY (LOW)\n");
 
-        lf_set(weight, (double)raw_data);
-        lf_set(low_food, raw_data < 10000); // example threshold
+        // 3. Check clock pin state
+        int clk_state = getPinState(self->hx.clock_pin);
+        printf("CLOCK PIN STATE BEFORE READ: %d\n", clk_state);
+
+        // 4. Manual single raw read (bypass mean)
+        int raw_single = getRawData(&self->hx);
+        printf("RAW SINGLE READ: %d\n", raw_single);
+
+        // 5. Mean read
+        int raw_mean = getRawDataMean(&self->hx, 5);
+        printf("RAW MEAN READ: %d\n", raw_mean);
+
+        // 6. Try toggling clock manually (TEST)
+        printf("Manual clock toggle test...\n");
+        for (int i = 0; i < 5; i++) {
+            setPinState(self->hx.clock_pin, 1);
+            usleep(10);
+            setPinState(self->hx.clock_pin, 0);
+            usleep(10);
+        }
+
+        int clk_after = getPinState(self->hx.clock_pin);
+        printf("CLOCK PIN AFTER TOGGLE: %d\n", clk_after);
+
+        lf_set(weight, (double)raw_mean);
+        lf_set(low_food, raw_mean < 10000);
     =}
 
     reaction(shutdown)  {=
