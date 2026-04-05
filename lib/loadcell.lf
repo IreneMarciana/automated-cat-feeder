@@ -36,52 +36,47 @@ reactor LoadCell{
     
 
     reaction(startup)->weight {=
-        int priority = 10;
-        int err = setPriority(priority);
-        if (err)
-        {
-            printf("\n!!! Failed to set process priority to %d\n", priority);
-            //exit();
-        }
-        err = initHX711(&self->hx, 6, 5);
-        if (err)
-        {
-            printf("\n!!! Failed to init HX711 struct !!!\n");
-            //exit();
-        }
+        int err = setPriority(10);
+
+        initHX711(&self->hx, 6, 5);
         setupGPIO(&self->hx);
         printf("\n!!! gpio setup is done !!!\n");
+
         reset(&self->hx);
         printf("\n!!! reset is done !!!\n");
 
-        getRawData(&self->hx);
-        err = zeroScale(&self->hx);
-        if (err)
-        {
-            printf("\n!!! Failed to zero the scale.\n");
-            //exit();
-        }
-        printf("\n!!! zero setup is done !!!\n");
-        //self->weight->value = 0.0; 
-        lf_set(weight, 0.0);
+        // stabilize hzx711
+        usleep(500000);
 
-    =}
+        // fuzzy calibration
+        for (int i = 0; i < 5; i++) {
+            getRawData(&self->hx);
+            usleep(100000);
+        }
+
+        // zero scale
+        err = zeroScale(&self->hx);
+        if (err) {
+            printf("\n!!! Failed to zero the scale.\n");
+        }
+
+        printf("\n!!! zero setup is done !!!\n");
+
+        lf_set(weight, 0.0);
+=}
 
     reaction(t)->weight, low_food {=
-        // todo
-        //1) add calibration to convert raw data to grams
-        //2) add threshold for low food
-        usleep(50000);
+        // wait for pin to be ready
+        printf("\n waiting for data pin to be ready...\n");
+        while (getPinState(self->hx.data_pin) == 1) {
+            usleep(1000);
+        }
 
-        int raw_data = getRawDataMean(&self->hx, 10);//self->samples);
-        printf("\n Current weight is: %ld", raw_data);// or weight->value?
-        lf_set(low_food, true);//placeholder
-        //raw_data = getRawData(&self->hx);
-        //printf("data pin state: %d\n", getPinState(self->hx.data_pin));
+        int raw_data = getRawDataMean(&self->hx, 5);
+        printf("\nRaw data: %d\n", raw_data);
+
         lf_set(weight, (double)raw_data);
-        //printf("gpio5: %d  gpio6: %d\n",
-          //  getPinState(5),
-            //getPinState(6));
+        lf_set(low_food, raw_data < 10000); // example threshold
     =}
 
     reaction(shutdown)  {=
