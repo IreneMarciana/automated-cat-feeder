@@ -113,14 +113,14 @@ reactor LoadCell{
 
         // main read w/ 10 samples
         int raw_mean = getRawDataMean(&self->hx, 10);
-        printf("\nRAW MEAN: %d\n", raw_mean)
+        printf("\nRAW MEAN: %d\n", raw_mean);
 
         // sort samples
         sort(raw_vals, 10);
 
         // median value
         int raw_median = raw_vals[5];
-        printf("\nRAW MEDIAN: %d\n\n", raw_median)
+        printf("\nRAW MEDIAN: %d\n\n", raw_median);
 
         lf_set(weight, (double)raw_median);
         lf_set(low_food, raw_median < 10000);
