@@ -90,8 +90,8 @@ reactor LoadCell{
         int raw_single = getRawData(&self->hx);
         //printf("RAW SINGLE READ: %d\n", raw_single);
 
-        // main read w/ 5 samples
-        int raw_mean = getRawDataMean(&self->hx, 5);
+        // main read w/ 10 samples
+        int raw_mean = getRawDataMean(&self->hx, 10);
         //printf("RAW MEAN READ: %d\n", raw_mean);
 
         lf_set(weight, (double)raw_mean);
