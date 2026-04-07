@@ -20,7 +20,8 @@ main reactor{
     =}
     
     reaction(balance.weight) {=
-        printf("Weight= %f\n", balance.weight->value);
+        //printf("Weight= %f\n", balance.weight->value);
+        printf("-----------------------------")
         // spin motor
     =}
 
