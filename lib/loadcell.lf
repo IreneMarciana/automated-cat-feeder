@@ -53,6 +53,17 @@ reactor LoadCell{
         // setup gpio pins
         setupGPIO(&self->hx);
         printf("GPIO pins configured\n");
+        printf("Testing clock pin write...\n");
+
+        //BEGIN TEST
+        setPinState(self->hx.clock_pin, 1);
+        usleep(1000);
+        int high = getPinState(self->hx.clock_pin);
+        setPinState(self->hx.clock_pin, 0);
+        usleep(1000);
+        int low = getPinState(self->hx.clock_pin);
+        printf("CLOCK TEST -> HIGH: %d, LOW: %d\n", high, low);
+        //END TEST
 
         // reset hx711
         reset(&self->hx);
