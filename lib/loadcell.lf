@@ -91,7 +91,7 @@ reactor LoadCell{
         //printf("RAW SINGLE READ: %d\n", raw_single);
 
         // main read w/ 10 samples
-        int raw_mean = getRawDataMean(&self->hx, 100);
+        int raw_mean = getRawDataMean(&self->hx, 10);
 
         //printf("RAW MEAN READ: %d\n", raw_mean);
 
