@@ -125,12 +125,17 @@ reactor LoadCell{
         sort(raw_vals, 10);
         // median value
         int raw_median = raw_vals[5];
-        printf("\nRAW MEDIAN: %d\n\n", raw_median);
+        //printf("\nRAW MEDIAN: %d\n\n", raw_median);
 
 
         // 2) calibration
         // TO BE CHANGED-> bowl will always be on balance
         // 0 is empty scale
+            //launch error state
+        // 1 is scale w/ bowl(44g)
+            // 0 empty bowl(44g)
+            // 1 nonideal bowl weight w/ food(44+50= ~94g)
+            // 2 ideal bowl weight w/ food(44 < x < 90 g )
         if (self->calib_phase == 0) {
             printf("Calibrating empty scale\n");
             self->offset = (double)raw_median;
@@ -139,7 +144,7 @@ reactor LoadCell{
         }
         // 1 is scale w/ bowl
         if (self->calib_phase == 1) {
-            printf("Place bowl (44g) on scale...\n");
+            printf("Waiting for bowl (44g) on scale...\n");
 
             // recalibrate bowl
             if (raw_median > self->offset + 10000) {
