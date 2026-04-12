@@ -11,6 +11,7 @@ main reactor{
 
     state run: bool = false
     timer error_timeout(1 sec, 10 sec);
+    timer test_timer(1 sec, 2 sec);
 
     motor = new StepperMotor();
     loadcell = new LoadCell();
@@ -22,6 +23,11 @@ main reactor{
         //printf("%d\n", balance.weight->value);
         //lf_set(motor.run, true);
     =}
+
+    reaction(test_timer)->motor.run{=
+        printf("entered motor test");
+        lf_set(motor.run, true);
+    =}
     
     /*reaction(loadcell.weight) {=
         //printf("Weight= %f\n", balance.weight->value);
@@ -29,7 +35,7 @@ main reactor{
         
     =}*/
 
-    reaction(loadcell.low_food)-> motor.run {=
+    /*reaction(loadcell.low_food)-> motor.run {=
         printf("low food reactor entered\n");
         if (loadcell.low_food->value) {
             printf("Low food detected! Spinning motor...\n");
@@ -37,7 +43,7 @@ main reactor{
             lf_set(motor.run, true);
         }
 
-    =}
+    =}*/
 
     /*reaction(loadcell.error_state)-> motor.stop {=
         if (balance.error_state->value){
