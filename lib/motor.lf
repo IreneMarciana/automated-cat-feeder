@@ -43,7 +43,7 @@ reactor StepperMotor{
     }
 
     mode DISPENSE {
-        reaction(startup){=
+        reaction(run){=
             if (DEV_ModuleInit())
             {
                 printf("Exiting; failed to init.\n"); 
@@ -61,7 +61,7 @@ reactor StepperMotor{
     }
 
     mode ERROR {
-        reaction(startup) {=
+        reaction(stop) {=
             printf("ERROR: weight index out of range; shutting down.\n"); 
             HR8825_SelectMotor(MOTOR2);
             HR8825_Stop();
