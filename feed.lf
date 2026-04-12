@@ -14,7 +14,7 @@ main reactor{
     timer test_timer(1 sec, 2 sec);
 
     motor = new StepperMotor();
-    loadcell = new LoadCell();
+    //loadcell = new LoadCell();
     //balance = new LoadCell(clock_pin = 6, data_pin = 5)
     
     reaction(startup)/*-> motor.run*/ {=
