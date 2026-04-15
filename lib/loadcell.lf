@@ -158,10 +158,10 @@ reactor LoadCell{
             lf_set(weight, grams);
             // modify to save bowl weight!!!
             // might need to floor grams
-            double food = grams - self->bowl_weight;
+            double food = ceil(grams - self->bowl_weight);
             // test statements
             printf("%.2f\n", food);
-            printf("%.2f\n", ceil(food));
+            //printf("%.2f\n", ceil(food));
             if(food<50 && food >=0){
                 printf("LOADCELL CASE 2\n");
                 lf_set(error_state, false);
