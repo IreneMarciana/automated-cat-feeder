@@ -35,7 +35,7 @@ main reactor{
     =}
 
     reaction(loadcell.error_state)-> motor.stop {=
-        if (balance.error_state->value){
+        if (loadcell.error_state->value){
             printf("\ERROR STATE\n");
         }
     
