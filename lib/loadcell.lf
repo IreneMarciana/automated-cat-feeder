@@ -78,17 +78,7 @@ reactor LoadCell{
         // reset hx711
         reset(&self->hx);
         //printf("hx711 reset done\n");
-
-//POTENTIALLY REMOVE
-        // fuzzy calibration
-        usleep(500000);
-        printf("Calibrating load cell sensor for 5 seconds...");
-        for (int i = 0; i < 5; i++) {
-            int val = getRawData(&self->hx);
-            //printf("Fuzzy calib %d: %d\n", i, val);
-            usleep(100000);
-        }
-// END OF POTENTIAL REMOVAL
+        
         //or use median func
         // zero scale
         err = zeroScale(&self->hx);
@@ -168,7 +158,7 @@ reactor LoadCell{
             lf_set(weight, grams);
             // modify to save bowl weight!!!
             // might need to floor grams
-            double food = self->bowl_weight - grams;
+            double food = grams - self->bowl_weight;
             // test statements
             printf("%.2f\n", food);
             printf("%.2f\n", ceil(food));
