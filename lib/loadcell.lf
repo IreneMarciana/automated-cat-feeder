@@ -119,13 +119,6 @@ reactor LoadCell{
             raw_vals[i] = getRawData(&self->hx);
             usleep(5000);
         }
-        // single read
-        //int raw_single = getRawData(&self->hx);
-        //printf("RAW SINGLE READ: %d\n", raw_single);
-
-        // main read w/ 10 samples
-        //int raw_mean = getRawDataMean(&self->hx, 10);
-        //printf("\nRAW MEAN: %d\n", raw_mean);
 
         // sort samples
         sort(raw_vals, 10);

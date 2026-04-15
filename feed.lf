@@ -24,35 +24,28 @@ main reactor{
         //lf_set(motor.run, true);
     =}
 
-    /*reaction(test_timer)->motor.run{=
-        printf("entered motor test");
-        lf_set(motor.run, true);
-    =}*/
-    
-    /*reaction(loadcell.weight) {=
-        //printf("Weight= %f\n", balance.weight->value);
-        //printf("-----------------------------");
-        
-    =}*/
-
     reaction(loadcell.low_food)-> motor.run {=
-        printf("low food reactor entered\n");
+        //printf("low food reactor entered\n");
+        printf("---");
         if (loadcell.low_food->value) {
             printf("Low food detected! Spinning motor...\n");
             //spin motor
             lf_set(motor.run, true);
         }
-
     =}
 
-    /*reaction(loadcell.error_state)-> motor.stop {=
+    reaction(loadcell.error_state)-> motor.stop {=
         if (balance.error_state->value){
-            printf("error state");
+            printf("\ERROR STATE\n");
         }
     
     =}
 
-    */
+    /*reaction(loadcell.weight) {=
+        //printf("Weight= %f\n", balance.weight->value);
+        //printf("-----------------------------");
+        
+    =}*/
 
     reaction(shutdown){=
         printf("Shutting down main reactor!\n");
