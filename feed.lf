@@ -33,7 +33,6 @@ main reactor{
             printf("Low food detected! Spinning motor...\n");
             //spin motor
             lf_set(motor.run, true);
-            lf_set(motor.stop, false);
         }
     =}
 
@@ -41,7 +40,6 @@ main reactor{
         if (loadcell.error_state->value){
             printf("\ERROR STATE\n");
             lf_set(motor.stop, true);
-            lf_set(motor.run, false);
         }
     
     =}
