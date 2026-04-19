@@ -16,6 +16,7 @@ main reactor{
     state run: bool = false;
     state prev_error: bool = false;
     state error_count: int = 0;
+    state in_cooldown: bool = false;
 
     timer error_timeout(1 sec, 10 sec);
     timer test_timer(1 sec, 2 sec);
@@ -30,11 +31,15 @@ main reactor{
     =}
 
     reaction(loadcell.low_food)-> motor.run {=
-        //printf("low food reactor entered\n");
         printf("\n---\n");
+
+        if (self->in_cooldown) {
+            printf("Cooldown active → ignoring low food\n");
+            return;
+        }
+
         if (loadcell.low_food->value) {
             printf("Low food detected! Spinning motor...\n");
-            //spin motor
             lf_set(motor.run, true);
         }
     =}
@@ -51,9 +56,16 @@ main reactor{
         if (self->error_count >= 5) {
             printf("\nERROR: 5 consecutive failures\n");
             lf_set(motor.stop, true);
-            self->error_count = 0;  // reset after triggering
+            self->error_count = 0;
+
+            self->in_cooldown = true;
         }
     
+    =}
+
+    reaction(motor.cooldown_done) {=
+        printf("Main: cooldown complete\n");
+        self->in_cooldown = false;
     =}
 
     /*reaction(loadcell.weight) {=
