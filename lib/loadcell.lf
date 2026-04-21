@@ -54,7 +54,8 @@ reactor LoadCell{
 
     // added
     state num_errors: int;
-    state in_cooldown: bool;
+    output cooldown: bool;
+    //state in_cooldown: bool;
 
     output weight: double; //grams
     output low_food: bool;
@@ -86,7 +87,7 @@ reactor LoadCell{
         } 
     =}
 
-    reaction(t)->weight, low_food, error_state {=
+    reaction(t)->weight, low_food, error_state, cooldown {=
         // 1) raw value read
         // wait for pin to go low
         int wait_count = 0;
@@ -136,20 +137,16 @@ reactor LoadCell{
 
 
         if (self->calibrated) {
-            double grams = (raw_median - self->offset) * self->scale;
-            printf("Weight (g): %.2f\n", grams);
-            lf_set(weight, grams);
-            double food = ceil(grams - self->bowl_weight);
-            // test statements
-            printf("Food (g): %.2f\n", food);
 
-            
             //added
             if (self->num_errors == 5){
                 printf("WARNING: 5 out of threshold measurements have been reached. Entering cooldown.");
-                self->in_cooldown = true;
+                //self->in_cooldown = true;
+                self->num_errors=0;
+                lf_set(cooldown, true);
+                return;
             }
-            if (self->in_cooldown == true){
+            /*if (self->in_cooldown == true){
                 if(self->num_errors>0) {
                     lf_set(low_food, false);
                     lf_set(error_state, false);
@@ -161,9 +158,17 @@ reactor LoadCell{
                     self->in_cooldown = false;
                     printf("cooldown period is over, resuming normal activity..\n");
                 }
-            }
+            }*/
             //end
 
+
+            double grams = (raw_median - self->offset) * self->scale;
+            printf("Weight (g): %.2f\n", grams);
+            lf_set(weight, grams);
+            double food = ceil(grams - self->bowl_weight);
+            // test statements
+            printf("Food (g): %.2f\n", food);
+            lf_set(cooldown, false);
 
             if (food>=50 && food<=60){
                 //perfect food

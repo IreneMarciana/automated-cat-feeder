@@ -14,12 +14,9 @@ import LoadCell from "lib/loadcell.lf";
 main reactor{
 
     state run: bool = false;
-    state prev_error: bool = false;
-    state error_count: int = 0;
-    state in_cooldown: bool = false;
 
-    //timer error_timeout(1 sec, 10 sec);
-    //timer test_timer(1 sec, 2 sec);
+    state cooldown_active: bool = false;
+    logical action cooldown_timer;
 
     motor = new StepperMotor();
     loadcell = new LoadCell();
@@ -36,6 +33,21 @@ main reactor{
             printf("Low food detected! Spinning motor...\n");
             lf_set(motor.run, true);
         }
+    =}
+
+    reaction(loadcell.cooldown) -> cooldown_timer {=
+        if (loadcell.cooldown->value) {
+            printf("Cooldown started for 10 seconds...\n");
+
+            self->cooldown_active = true;
+
+            lf_schedule(cooldown_timer, 10 sec);
+        }
+    =}
+
+    reaction(cooldown_timer) {=
+        printf("Cooldown ended.\n");
+        self->cooldown_active = false;
     =}
 
     reaction(shutdown){=
