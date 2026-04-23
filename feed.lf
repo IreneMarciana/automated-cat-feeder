@@ -15,8 +15,8 @@ main reactor{
 
     state run: bool = false;
 
-    state cooldown_active: bool = false;
-    logical action cooldown_timer;
+    //state cooldown_active: bool = false;
+    //logical action cooldown_timer;
 
     motor = new StepperMotor();
     loadcell = new LoadCell();
@@ -29,14 +29,19 @@ main reactor{
     reaction(loadcell.low_food)-> motor.run {=
         printf("\n---\n");
 
-        if (!self->cooldown_active && loadcell.low_food->value) {
-            self->cooldown_active = false;
+        if (loadcell.low_food->value) {
             printf("Low food detected! Spinning motor...\n");
             lf_set(motor.run, true);
         }
+
+        /*if (!self->cooldown_active && loadcell.low_food->value) {
+            self->cooldown_active = false;
+            printf("Low food detected! Spinning motor...\n");
+            lf_set(motor.run, true);
+        }*/
     =}
 
-    reaction(loadcell.cooldown) -> cooldown_timer {=
+    /*reaction(loadcell.cooldown) -> cooldown_timer {=
         if (loadcell.cooldown->value && !self->cooldown_active){
             printf("Cooldown started for 10 seconds...\n");
 
@@ -49,7 +54,7 @@ main reactor{
     reaction(cooldown_timer) {=
         printf("Cooldown ended.\n");
         self->cooldown_active = false;
-    =}
+    =}*/
 
     reaction(shutdown){=
         printf("Shutting down main reactor!\n");

@@ -12,6 +12,7 @@ target C{
 //TODO:
 // (1) potentially change pin input logic
 // (2) further detail calibration
+// (3) implement cooldown 
 
 // if in cooldown, loadcell shld be prevented from measuring
 
@@ -53,9 +54,11 @@ reactor LoadCell{
     state scale: double;
 
     // added
-    state num_errors: int;
+    state num_errors: int = 0;
+    state in_cooldown: bool = false;
+    logical action cooldown_end;
     output cooldown: bool;
-    //state in_cooldown: bool;
+
 
     output weight: double; //grams
     output low_food: bool;
@@ -87,7 +90,18 @@ reactor LoadCell{
         } 
     =}
 
-    reaction(t)->weight, low_food, error_state, cooldown {=
+    reaction(t)->weight, low_food, error_state, cooldown, cooldown_end {=
+        //added
+        if (self->in_cooldown) {
+            printf("LoadCell in cooldown. Skipping measurement.\n");
+            lf_set(low_food, false);
+            lf_set(error_state, false);
+            lf_set(cooldown, true);
+            return;
+        }
+        //end added
+
+
         // 1) raw value read
         // wait for pin to go low
         int wait_count = 0;
@@ -139,14 +153,29 @@ reactor LoadCell{
         if (self->calibrated) {
 
             //added
-            if (self->num_errors == 5){
+            if (self->num_errors >= 5) {
+                printf("WARNING: 5 invalid measurements. Entering 10-second cooldown.\n");
+
+                self->num_errors = 0;
+                self->in_cooldown = true;
+
+                lf_set(cooldown, true);
+                lf_set(low_food, false);
+                lf_set(error_state, true);
+
+                lf_schedule(cooldown_end, SEC(10));
+                return;
+            }
+            //end added
+
+            /*if (self->num_errors == 5){
                 printf("WARNING: 5 out of threshold measurements have been reached. Entering cooldown.");
                 //self->in_cooldown = true;
                 self->num_errors=0;
                 lf_set(cooldown, true);
                 return;
             }
-            /*if (self->in_cooldown == true){
+            if (self->in_cooldown == true){
                 if(self->num_errors>0) {
                     lf_set(low_food, false);
                     lf_set(error_state, false);
@@ -189,6 +218,12 @@ reactor LoadCell{
 
             }
         }
+    =}
+
+    reaction(cooldown_end) -> cooldown {=
+        printf("Cooldown complete. Resuming measurements.\n");
+        self->in_cooldown = false;
+        lf_set(cooldown, false);
     =}
 
     reaction(shutdown)  {=
