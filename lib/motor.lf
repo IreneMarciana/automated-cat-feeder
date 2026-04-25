@@ -30,12 +30,12 @@ reactor StepperMotor{
             }
         =}
         // case 3: weight oddly high or low, run is false + error
-        reaction(stop)->reset(ERROR){=
+        /*reaction(stop)->reset(ERROR){=
             if (stop->value){
                 printf("ERROR: stop signal received during IDLE.\n"); 
                 lf_set_mode(ERROR);
             }
-        =}
+        =}*/
     }
 
     mode DISPENSE {
@@ -53,15 +53,15 @@ reactor StepperMotor{
             HR8825_TurnStep(BACKWARD, 6144, 1);
             HR8825_Stop();
         =}
-        reaction(stop)->reset(ERROR) {=
+        /*reaction(stop)->reset(ERROR) {=
             if (stop->value) {
                 printf("ERROR: stop received during DISPENSE.\n");
                 lf_set_mode(ERROR);
             }
-        =}
+        =}*/
     }
 
-    mode ERROR {
+    /*mode ERROR {
         reaction(startup) {=
             printf("ERROR mode\n");
             printf("ERROR: weight index out of range; shutting down.\n"); 
@@ -69,6 +69,6 @@ reactor StepperMotor{
             HR8825_Stop();
             DEV_ModuleExit();
         =}
-    }
+    }*/
 
 }

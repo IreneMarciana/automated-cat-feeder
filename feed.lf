@@ -13,7 +13,7 @@ main reactor{
     loadcell = new LoadCell();
     
     reaction(startup){=
-        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+        printf("\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         printf("Welcome to automated cat feeder!\nWe will be using 50-60 grams as the ideal food weight threshold and pins 5 for data and 6 for clock.\n");
         printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
         printf(" /\\_/\\\n");
@@ -24,14 +24,10 @@ main reactor{
 
     reaction(loadcell.low_food)-> motor.run {=
         if (loadcell.low_food->value) {
-            printf("Low food detected: ");
+            printf("Low food detected!\n");
             lf_set(motor.run, true);
         }
 
     =}
-
-    /*printf(" /\\_/\\\n");
-        printf("( -.- )\n");*/
-
 
 }
