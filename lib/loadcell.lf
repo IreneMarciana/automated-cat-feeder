@@ -85,7 +85,7 @@ reactor LoadCell{
             printf("~~~ COOLDOWN: skipping measurement ~~~\n");
             lf_set(low_food, false);
             lf_set(cooldown, true);
-            lf_schedule(sample, SEC(2));
+            //lf_schedule(sample, SEC(2));
             return;
         }
 
