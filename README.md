@@ -100,19 +100,3 @@ Irene Fahndrich
 
 
 
-To be done:
-- overview
-- usage
-- hardware
-- software(mod bcm + hx711 changes)
-
-
-
-- demo
--
-
-- assumptions
-// TODO: potentially add interactive goal weight? email notif of feeding, take picture
-//TODO:
-// (1) potentially change pin input logic
-
