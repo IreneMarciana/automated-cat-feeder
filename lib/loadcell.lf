@@ -51,7 +51,8 @@ reactor LoadCell{
     output weight: double; //grams
     output low_food: bool;
 
-    timer t (1 sec, 2 sec);
+    //timer t (1 sec, 2 sec);
+    logical action sample;
     
     reaction(startup)->weight{=
         // set process priority
@@ -74,15 +75,17 @@ reactor LoadCell{
         if (err) {
             printf("FAILURE: zero scale\n");
         } 
+        lf_schedule(sample, SEC(1));
     =}
 
 
-    reaction(t)->weight, low_food, cooldown, cooldown_end {=
+    reaction(sample)->weight, low_food, cooldown, cooldown_end {=
         //measurement skip from cooldown check
         if (self->in_cooldown) {
             printf("~~~ COOLDOWN: skipping measurement ~~~\n");
             lf_set(low_food, false);
             lf_set(cooldown, true);
+            lf_schedule(sample, SEC(2));
             return;
         }
 
@@ -112,6 +115,7 @@ reactor LoadCell{
             printf("Calibrating ...\n");
             self->offset = (double)raw_median;
             self->scale_init = true;
+            lf_schedule(sample, SEC(2));
             return;
         }
         
@@ -134,6 +138,7 @@ reactor LoadCell{
                 double grams = (raw_median - self->offset) * self->scale;
                 self->bowl_weight=grams;
             }
+            lf_schedule(sample, SEC(2));
             return;
         }
 
@@ -152,6 +157,7 @@ reactor LoadCell{
                 lf_set(low_food, false);
 
                 lf_schedule(cooldown_end, SEC(10));
+                lf_schedule(sample, SEC(2));
                 return;
             }
 
@@ -183,6 +189,7 @@ reactor LoadCell{
                 lf_set(low_food, false);
             }
         }
+        lf_schedule(sample, SEC(2));
     =}
 
     reaction(cooldown_end) -> cooldown {=
