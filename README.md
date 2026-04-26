@@ -1,10 +1,10 @@
 <h1 align="center">
   <br>
-  🐾 Automated Cat Feeder
+    Automated Cat Feeder
   <br>
 </h1>
 
-<h4 align="center">An autonomous, weight-sensing pet feeder built with <a href="https://www.lf-lang.org/" target="_blank">Lingua Franca</a>.</h4>
+<h4 align="center">A weight-sensing pet feeder built with <a href="https://www.lf-lang.org/" target="_blank">Lingua Franca</a>.</h4>
 
 <br>
 
@@ -17,12 +17,30 @@
 
 ---
 
-## About the Project
+## Overview
 
-This project is an embedded, real-time automated pet feeder designed to run on a Raspberry Pi. Built using Lingua Franca (targeting C), the system autonomously monitors and maintains a cat's food bowl weight. It uses a load cell to measure the current amount of food and triggers a stepper motor to dispense more kibble if the weight drops below a set threshold.
+This project is an elementary automated pet feeder designed to run on a Raspberry Pi 4. 
+If the food weight is below a certain threshold, the motor is triggered dispensing more food using an archimedes screw.
+
+*Assumptions*
+- Goal food weight: 50 - 60 grams
+- Data pin= 5, Clock pin= 6
+- Empty bowl placed to begin with
+
 
 The goal is to ensure a pet always has the ideal amount of food (50-60 grams) while demonstrating how deterministic, reactive programming can be used to handle noisy sensor data, hardware interrupts, and mechanical dispensing logic safely.
 
+---
+## Usage
+To compile and run this application, ensure you have Lingua Franca installed. From your command line:
+
+```bash
+# 1. Compile the main reactor
+lfc feed.lf
+
+# 2. Run the program (sudo is required for GPIO hardware priority)
+sudo bin/feed
+```
 ---
 
 ## Features
@@ -37,10 +55,10 @@ The goal is to ensure a pet always has the ideal amount of food (50-60 grams) wh
 
 ## Hardware Requirements
 
-- **Raspberry Pi** (Primary controller running the LF application)
+- **Raspberry Pi 4 Model B** (Primary controller running the LF application)
 - **HX711 Load Cell Amplifier** (Wired to GPIO 5 for Data, GPIO 6 for Clock)
 - **Load Cell** (Mounted to the base of the food bowl)
-- **Stepper Motor & HR8825 Driver** (Wired to `MOTOR2` output for the dispensing mechanism)
+- **Stepper Motor & Stepper Hat B** (Wired to `MOTOR2` output for the dispensing mechanism)
 
 ---
 
@@ -48,7 +66,8 @@ The goal is to ensure a pet always has the ideal amount of food (50-60 grams) wh
 
 - **Lingua Franca compiler** (`lfc`)
 - **GCC toolchain** (`gcc`) for the C target
-- **BCM2835 C Library** (Integrated via CMake for HR8825 motor control)
+- **BCM2835 C Library** 
+- **HX711 C Library** 
 
 ### Custom Library Modifications
 To ensure real-time safety and hardware stability on the ARM-based Raspberry Pi, the standard `hx711.c` library was heavily modified for this project:
@@ -58,18 +77,26 @@ To ensure real-time safety and hardware stability on the ARM-based Raspberry Pi,
 
 ---
 
-## How To Use
+### Components(Reactors)
+<table>
+  <tr>
+    <td> <img src="assets/feed.png" alt="Feed Reactor" width="400"></td>
+    <td> <strong><a href="feed.lf">feed.lf</a></strong>: The main reactor that instantiates the motor and loadcell components. It controls the startup sequence, prints the terminal interface, and acts as the central hub by routing the <code>low_food</code> signal from the scale to trigger the motor's dispensing logic.</td>
+  </tr>
+  <tr>
+    <td> <img src="assets/motor.png" alt="Motor Reactor" width="400"></td>
+    <td> <strong><a href="lib/motor.lf">motor.lf</a></strong>: Manages the physical food dispensing mechanism. It uses a modal model to switch between <code>IDLE</code> and <code>DISPENSE</code> states, activating the HR8825 stepper motor driver to rotate a specific number of steps when commanded to feed.</td>
+  </tr>
+  <tr>
+    <td> <img src="assets/loadcell.png" alt="Loadcell Reactor" width="400"></td>
+    <td> <strong><a href="lib/loadcell.lf">loadcell.lf</a></strong>: Handles the HX711 scale sensor. It takes median-filtered weight samples every two seconds, manages interactive startup calibration, evaluates the food level against ideal thresholds (50-60g), and enforces a 10-second safety cooldown if it detects anomalous readings.</td>
+  </tr>
+</table>
 
-To compile and run this application, ensure you have Lingua Franca installed. From your command line:
+### Demo
 
-```bash
-# 1. Compile the main reactor
-lfc feed.lf
-
-# 2. Run the program (sudo is required for GPIO hardware priority)
-sudo bin/feed
-
-
+### Contributor
+Irene Fahndrich
 
 
 

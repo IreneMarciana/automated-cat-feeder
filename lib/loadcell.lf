@@ -1,7 +1,6 @@
 target C{
     single-threaded: true,
     keepalive:true,
-    //fast: false,
     cmake-include: ["../c_lib/hx711/scale.cmake"],
     files: ["../c_lib/hx711/gb_common.c", "../c_lib/hx711/gb_common.h", "../c_lib/hx711/hx711.c", 
             "../c_lib/hx711/hx711.h"]
@@ -61,6 +60,7 @@ reactor LoadCell{
         }
 
         // init hx711
+        //initHX711(&self->hx, <CLOCK_PIN>, <DATA_PIN>);
         initHX711(&self->hx, 6, 5);
 
         // setup gpio pins
