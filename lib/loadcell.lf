@@ -46,6 +46,7 @@ reactor LoadCell{
     state in_cooldown: bool = false;
     physical action cooldown_end;
     output cooldown: bool;
+    state flag: bool;
 
     // feed.lf outputs
     output weight: double; //grams
@@ -79,7 +80,7 @@ reactor LoadCell{
 
     reaction(t)->weight, low_food, cooldown, cooldown_end {=
         //measurement skip from cooldown check
-        if (self->in_cooldown) {
+        if (self->in_cooldown && !self->flag) {
             printf("~~~ COOLDOWN: skipping measurement ~~~\n");
             lf_set(low_food, false);
             lf_set(cooldown, true);
@@ -166,18 +167,21 @@ reactor LoadCell{
             if (food>=50 && food<=60){
                 //perfect food
                 printf("CASE 1: Ideal weight\n");
+                self->flag=true;
                 self->num_errors=0;
 
                 lf_set(low_food, false);
             }
             else if(food<50 && food >=0){
                 printf("CASE 2: Low food\n");
+                self->flag=true;
                 self->num_errors=0;
 
                 lf_set(low_food, true);
             }
             else if (food>60 || food <0){
                 printf("CASE 3: Oddly high or low\n");
+                self->flag=false;
                 self->num_errors++;
 
                 lf_set(low_food, false);
