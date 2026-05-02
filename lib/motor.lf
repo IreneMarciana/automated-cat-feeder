@@ -1,48 +1,50 @@
-target C{
-    single-threaded: true,
-    keepalive:true, #?
-    cmake-include: ["../c_lib/bcm2835/motor.cmake"],
-    files: ["../c_lib/bcm2835/DEV_Config.h", "../c_lib/bcm2835/HR8825.h", "../c_lib/bcm2835/HR8825.c", 
-            "../c_lib/bcm2835/DEV_Config.c", "../c_lib/bcm2835/Debug.h"]
+target C {
+  single-threaded: true,
+  keepalive: true,  //?
+  cmake-include: ["../c_lib/bcm2835/motor.cmake"],
+  files: [
+      "../c_lib/bcm2835/DEV_Config.h",
+      "../c_lib/bcm2835/HR8825.h",
+      "../c_lib/bcm2835/HR8825.c",
+      "../c_lib/bcm2835/DEV_Config.c",
+      "../c_lib/bcm2835/Debug.h"]
 }
 
 preamble {=
-    #include "HR8825.h"
-    #include "DEV_Config.h"
-    #include "Debug.h"
-    #include <stdio.h>      //printf()
-    #include <stdlib.h>     //exit()
+  #include "HR8825.h"
+  #include "DEV_Config.h"
+  #include "Debug.h"
+  #include <stdio.h>      //printf()
+  #include <stdlib.h>     //exit()
 =}
 
-reactor StepperMotor{
+reactor StepperMotor {
+  input run: bool
 
-    input run: bool;
+  initial mode IDLE {
+    reaction(run) -> reset(DISPENSE) {=
+      // weight under threshold, run is true + dispense
+      if(run->value){
+          lf_set_mode(DISPENSE);
+      }
+      // else, ideal weight, can remain idle
+    =}
+  }
 
-    initial mode IDLE {
-        reaction(run)->reset(DISPENSE){=
-            // weight under threshold, run is true + dispense
-            if(run->value){
-                lf_set_mode(DISPENSE);
-            }
-            // else, ideal weight, can remain idle
-        =}
-    }
-
-    mode DISPENSE {
-        reaction(run){=
-            if (DEV_ModuleInit())
-            {
-                printf("EXITING; failed to init.\n"); 
-                exit(0);
-            }
-            //signal(SIGINT, Handler);
-            HR8825_SelectMotor(MOTOR2);
-            // fullstep -> 1/32step
-            HR8825_SetMicroStep(SOFTWARD, "fullstep");
-            // backward/forward, steps, speed(1=fast, 5=slow)
-            HR8825_TurnStep(BACKWARD, 6144, 1);
-            HR8825_Stop();
-        =}
-    }
-
+  mode DISPENSE {
+    reaction(run) {=
+      if (DEV_ModuleInit())
+      {
+          printf("EXITING; failed to init.\n");
+          exit(0);
+      }
+      //signal(SIGINT, Handler);
+      HR8825_SelectMotor(MOTOR2);
+      // fullstep -> 1/32step
+      HR8825_SetMicroStep(SOFTWARD, "fullstep");
+      // backward/forward, steps, speed(1=fast, 5=slow)
+      HR8825_TurnStep(BACKWARD, 6144, 1);
+      HR8825_Stop();
+    =}
+  }
 }
