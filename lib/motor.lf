@@ -43,15 +43,15 @@ reactor StepperMotor {
       //signal(SIGINT, Handler);
       HR8825_SelectMotor(MOTOR2);
       // fullstep -> 1/32step
-      HR8825_SetMicroStep(SOFTWARD, "1/4step");
+      HR8825_SetMicroStep(SOFTWARD, "1/16step");
       // backward/forward, steps, speed(1=fast, 5=slow)
-      HR8825_TurnStep(FORWARD, 6144, 1);
+      HR8825_TurnStep(BACKWARD, 6144, 1);
       HR8825_Stop();
 
       HR8825_SelectMotor(MOTOR2);
-      HR8825_SetMicroStep(SOFTWARD, "1/8step");
+      HR8825_SetMicroStep(SOFTWARD, "1/32step");
       // backward/forward, steps, speed(1=fast, 5=slow)
-      HR8825_TurnStep(BACKWARD, 6144, 1);
+      HR8825_TurnStep(FORWARD, 6144, 1);
       HR8825_Stop();
     =}
   }
