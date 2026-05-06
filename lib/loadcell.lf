@@ -31,7 +31,7 @@ preamble {=
   }
 =}
 
-reactor LoadCell {
+    reactor LoadCell {
     state hx: HX711            // init hx711
 
     state scale_init: bool
@@ -45,15 +45,11 @@ reactor LoadCell {
     state in_cooldown: bool = false
     physical action cooldown_end
 
-
-    state raw_median: int
-
-
     output low_food: bool
 
     timer t(1 sec, 2 sec)
 
-    reaction(startup) /*-> weight*/ {=
+    reaction(startup) {=
         // set process priority
         int err = setPriority(10);
         if (err) {
@@ -121,7 +117,7 @@ reactor LoadCell {
                 printf("offset = %f\n", self->offset);
                 printf("scale  = %f g/unit\n", self->scale);
 
-                double grams = (self->raw_median - self->offset) * self->scale;
+                double grams = (raw_median - self->offset) * self->scale;
                 self->bowl_weight=grams;
             }
             return;
@@ -136,8 +132,7 @@ reactor LoadCell {
             lf_set(low_food, false);
             return;
         }
-    //maybe move up
-    /* // 1) raw value read
+        // 1) raw value read
         // wait for pin to go low
         int wait_count = 0;
         while (getPinState(self->hx.data_pin) == 1) {
@@ -186,7 +181,7 @@ reactor LoadCell {
                 self->bowl_weight=grams;
             }
             return;
-        }*/
+        }
 
 
         if (self->calibrated) {
@@ -206,7 +201,7 @@ reactor LoadCell {
                 return;
             }
 
-            double grams = (self->raw_median - self->offset) * self->scale;
+            double grams = (raw_median - self->offset) * self->scale;
             printf("\n\nWeight (g): %.2f\n", grams);
 
             double food = ceil(grams - self->bowl_weight);
