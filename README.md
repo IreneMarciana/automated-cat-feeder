@@ -5,15 +5,9 @@
 </h1>
 
 <h4 align="center">A weight-sensing pet feeder built with <a href="https://www.lf-lang.org/" target="_blank">Lingua Franca</a>.</h4>
+<td> <img src="assets/cat_feeder.png" width="800"></td>
 
-<br>
 
-<div display="block" align="center">
-  <video width="600" controls>
-    <source src="assets/demo.mov" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-</div>
 
 ---
 
@@ -26,6 +20,7 @@ If the food weight is below a certain threshold, the motor is triggered dispensi
 - Goal food weight: 50 - 60 grams
 - Data pin= 5, Clock pin= 6
 - Empty bowl placed to begin with
+- Bowl Calibration Base Weight: 44 grams
 
 
 The goal is to ensure a pet always has the ideal amount of food (50-60 grams) while demonstrating how deterministic, reactive programming can be used to handle noisy sensor data, hardware interrupts, and mechanical dispensing logic safely.
@@ -71,16 +66,18 @@ sudo bin/feed
 - **[MikeM BCM2835 C Library](https://www.airspayce.com/mikem/bcm2835/)** 
 - **[HX711 C Library](https://github.com/gandalf15/HX711)** 
 
----
-## Mechanical Requirements
-- **Archimedes Screw** 
-- **Container** 
 
 ### Custom Library Modifications
 To ensure real-time safety and hardware stability on the ARM-based Raspberry Pi, the standard `hx711.c` library was heavily modified for this project:
 * **Memory Barriers:** Added `__sync_synchronize()` around direct GPIO register access to prevent CPU instruction reordering.
 * **Precise Timing:** Replaced empty `for`-loop delays with explicit `usleep(1)` hardware delays.
 * **Memory Management:** Stripped out dynamic memory allocation (`malloc`/`free`) to prevent fragmentation during long uptimes.
+
+---
+
+## Mechanical Requirements
+- **Archimedes Screw** 
+- **Container** 
 
 ---
 
@@ -104,7 +101,7 @@ To ensure real-time safety and hardware stability on the ARM-based Raspberry Pi,
 [Demo Video](https://youtube.com/shorts/B0-c7XisVDo)
 
 ### Contributor
-Irene Fahndrich
+[Irene Fahndrich](https://github.com/IreneMarciana)
 
 
 
