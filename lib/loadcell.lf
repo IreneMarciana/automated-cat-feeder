@@ -8,7 +8,7 @@ target C {
       "../c_lib/hx711/hx711.c",
       "../c_lib/hx711/hx711.h"]
 }
-
+// maybe take out cooldown??
 // perhaps remove all error state?
 preamble {=
   #include "hx711.h"
@@ -45,16 +45,16 @@ reactor LoadCell {
   state num_errors: int = 0  // cooldown variables
   state in_cooldown: bool = false
   physical action cooldown_end
-  output cooldown: bool
+  //output cooldown: bool
 
   // feed.lf outputs
   // grams
-  output weight: double
+  //output weight: double
   output low_food: bool
 
   timer t(1 sec, 2 sec)
 
-  reaction(startup) -> weight {=
+  reaction(startup) /*-> weight*/ {=
     // set process priority
     int err = setPriority(10);
     if (err) {
@@ -78,12 +78,12 @@ reactor LoadCell {
     }
   =}
 
-  reaction(t) -> weight, low_food, cooldown, cooldown_end {=
+  reaction(t) -> /*weight,*/ low_food, cooldown_end {=
     //measurement skip from cooldown check
     if (self->in_cooldown) {
         //printf("~~~ COOLDOWN: skipping measurement ~~~\n");
         lf_set(low_food, false);
-        lf_set(cooldown, true);
+        //lf_set(cooldown, true);
         return;
     }
 
@@ -141,7 +141,8 @@ reactor LoadCell {
 
     if (self->calibrated) {
         // cooldown triggered
-        if (self->num_errors >= 5){
+        // try logical action
+        if (self->num_errors >= 5 && !self->in_cooldown){
             printf("\n\n\nWARNING: 5 invalid measurements. Entering 10-second cooldown.\n");
             printf(" /\\_/\\\n");
             printf("( -.- )\n\n");
@@ -149,7 +150,7 @@ reactor LoadCell {
             self->num_errors = 0;
             self->in_cooldown = true;
 
-            lf_set(cooldown, true);
+            //lf_set(cooldown, true);
             lf_set(low_food, false);
 
             lf_schedule(cooldown_end, SEC(10));
@@ -158,11 +159,11 @@ reactor LoadCell {
 
         double grams = (raw_median - self->offset) * self->scale;
         printf("\n\nWeight (g): %.2f\n", grams);
-        lf_set(weight, grams);
+        //lf_set(weight, grams);
 
         double food = ceil(grams - self->bowl_weight);
         printf("Food (g): %.2f\n", food);
-        lf_set(cooldown, false);
+        //lf_set(cooldown, false);
 
         if (food>=50 && food<=60){
             //perfect food
@@ -186,10 +187,10 @@ reactor LoadCell {
     }
   =}
 
-  reaction(cooldown_end) -> cooldown {=
+  reaction(cooldown_end) {=
     printf("\nCOOLDOWN complete: Resuming measurements\n\n");
     self->in_cooldown = false;
-    lf_set(cooldown, false);
+    //lf_set(cooldown, false);
   =}
 
   reaction(shutdown) {=
