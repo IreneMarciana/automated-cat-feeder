@@ -101,6 +101,7 @@ To ensure real-time safety and hardware stability on the ARM-based Raspberry Pi,
 </table>
 
 ### Demo
+[Demo Video](https://youtube.com/shorts/B0-c7XisVDo)
 
 ### Contributor
 Irene Fahndrich
