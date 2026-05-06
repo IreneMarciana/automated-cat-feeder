@@ -1,6 +1,6 @@
 target C {
   single-threaded: true,
-  keepalive: true,  //?
+  //keepalive: true,  //?
   cmake-include: ["../c_lib/bcm2835/motor.cmake"],
   files: [
       "../c_lib/bcm2835/DEV_Config.h",
@@ -50,7 +50,6 @@ reactor StepperMotor {
       HR8825_SetMicroStep(SOFTWARD, "1/4step");
       // backward/forward, steps, speed(1=fast, 5=slow)
       HR8825_TurnStep(FORWARD, 6144, 1);
-      HR8825_Stop();
       
     =}
 

@@ -1,6 +1,6 @@
 target C {
-  single-threaded: true,
-  keepalive: true
+  single-threaded: true/*,
+  keepalive: true*/
 }
 
 // delete weight + cooldown

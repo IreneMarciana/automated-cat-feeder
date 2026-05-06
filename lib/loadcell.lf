@@ -8,8 +8,8 @@ target C {
       "../c_lib/hx711/hx711.c",
       "../c_lib/hx711/hx711.h"]
 }
-// maybe take out cooldown??
-// perhaps remove all error state?
+
+
 preamble {=
   #include "hx711.h"
   #include "gb_common.h"
@@ -44,12 +44,8 @@ reactor LoadCell {
 
   state num_errors: int = 0  // cooldown variables
   state in_cooldown: bool = false
-  logical action cooldown_end
-  //output cooldown: bool
+  physical action cooldown_end
 
-  // feed.lf outputs
-  // grams
-  //output weight: double
   output low_food: bool
 
   timer t(1 sec, 2 sec)
@@ -62,7 +58,7 @@ reactor LoadCell {
     }
 
     // init hx711
-    //initHX711(&self->hx, <CLOCK_PIN>, <DATA_PIN>);
+    // initHX711(&self->hx, <CLOCK_PIN>, <DATA_PIN>);
     initHX711(&self->hx, 6, 5);
 
     // setup gpio pins
@@ -83,7 +79,6 @@ reactor LoadCell {
     if (self->in_cooldown) {
         //printf("~~~ COOLDOWN: skipping measurement ~~~\n");
         lf_set(low_food, false);
-        //lf_set(cooldown, true);
         return;
     }
 
@@ -150,7 +145,6 @@ reactor LoadCell {
             self->num_errors = 0;
             self->in_cooldown = true;
 
-            //lf_set(cooldown, true);
             lf_set(low_food, false);
 
             lf_schedule(cooldown_end, SEC(10));
@@ -159,11 +153,9 @@ reactor LoadCell {
 
         double grams = (raw_median - self->offset) * self->scale;
         printf("\n\nWeight (g): %.2f\n", grams);
-        //lf_set(weight, grams);
 
         double food = ceil(grams - self->bowl_weight);
         printf("Food (g): %.2f\n", food);
-        //lf_set(cooldown, false);
 
         if (food>=50 && food<=60){
             //perfect food
@@ -190,7 +182,6 @@ reactor LoadCell {
   reaction(cooldown_end) {=
     printf("\nCOOLDOWN complete: Resuming measurements\n\n");
     self->in_cooldown = false;
-    //lf_set(cooldown, false);
   =}
 
   reaction(shutdown) {=
