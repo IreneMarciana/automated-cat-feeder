@@ -30,7 +30,10 @@ reactor StepperMotor {
       if(run->value){
           lf_set_mode(DISPENSE);
       }
-      // else, ideal weight, can remain idle
+      else { // else, ideal weight, can remain idle
+        HR8825_SelectMotor(MOTOR2);
+        HR8825_Stop();
+      }
     =}
   }
 
