@@ -73,9 +73,9 @@ sudo bin/feed
 
 
 ### Custom Library Modifications
-To ensure real-time safety and hardware stability on the ARM-based Raspberry Pi, the standard `hx711.c` library was heavily modified for this project:
+To ensure real-time safety and hardware stability on the ARM-based Raspberry Pi, the standard `hx711.c` library was modified for this project:
 * **Memory Barriers:** Added `__sync_synchronize()` around direct GPIO register access to prevent CPU instruction reordering.
-* **Precise Timing:** Replaced empty `for`-loop delays with explicit `usleep(1)` hardware delays.
+* **Precise Timing:** Replaced empty `for' loop delays with explicit `usleep(1)` hardware delays.
 * **Memory Management:** Stripped out dynamic memory allocation (`malloc`/`free`) to prevent fragmentation during long uptimes.
 
 ---
