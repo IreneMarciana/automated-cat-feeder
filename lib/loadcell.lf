@@ -1,6 +1,6 @@
 target C {
   single-threaded: true,
-  keepalive: true,
+  //keepalive: true,
   cmake-include: ["../c_lib/hx711/scale.cmake"],
   files: [
       "../c_lib/hx711/gb_common.c",
@@ -44,7 +44,7 @@ reactor LoadCell {
 
   state num_errors: int = 0  // cooldown variables
   state in_cooldown: bool = false
-  physical action cooldown_end
+  logical action cooldown_end
 
   output low_food: bool
 
