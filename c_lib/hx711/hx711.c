@@ -132,7 +132,8 @@ bool getPinState(unsigned pin_number)
 }
 
 // changed!
-// place mem barrier around direct gpio mem write to assure cpu does not reorder other var around hw write
+// place mem barrier around direct gpio mem write to assure 
+//cpu does not reorder other var around hw write
 int setPinState(unsigned pin_number, bool state)
 {
   if (pin_number > 31)

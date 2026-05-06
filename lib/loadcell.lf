@@ -9,7 +9,6 @@ target C {
       "../c_lib/hx711/hx711.h"]
 }
 
-
 preamble {=
   #include "hx711.h"
   #include "gb_common.h"
@@ -74,7 +73,7 @@ reactor LoadCell {
     }
   =}
 
-  reaction(t) -> /*weight,*/ low_food, cooldown_end {=
+  reaction(t) -> low_food, cooldown_end {=
     //measurement skip from cooldown check
     if (self->in_cooldown) {
         //printf("~~~ COOLDOWN: skipping measurement ~~~\n");

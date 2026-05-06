@@ -20,4 +20,4 @@ bcm2835 is from another [mikem/bcm2835 Library](https://www.airspayce.com/mikem/
 ## hx711
 gb_common and hx711 are from the [HX711 C Library](https://github.com/gandalf15/HX711).
 - **gb_common**: Provides low-level memory-mapped GPIO setup and utility functions for direct hardware access on the Pi, including pin control and timing loops.
-- **hx711**: Handles GPIO signaling, data reading, calibration, and weight measurement with added memory barriers for reliable hardware interaction with loadcell amplifier HX711.
+- **hx711**: Handles GPIO signaling, data reading, calibration, and weight measurement with added memory barriers for reliable hardware interaction with loadcell amplifier HX711. Upgraded to work with Raspberry Pi 4 with memory barriers.

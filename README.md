@@ -17,9 +17,6 @@
 
 ---
 
-// add physical components necessary
-// add links
-
 ## Overview
 
 This project is an elementary automated pet feeder designed to run on a Raspberry Pi 4. 
@@ -58,10 +55,11 @@ sudo bin/feed
 
 ## Hardware Requirements
 
-- **Raspberry Pi 4 Model B** (Primary controller running the LF application)
-- **HX711 Load Cell Amplifier** (Wired to GPIO 5 for Data, GPIO 6 for Clock)
-- **Load Cell** (Mounted to the base of the food bowl)
-- **Stepper Motor & Stepper Hat B** (Wired to `MOTOR2` output for the dispensing mechanism)
+- **[Raspberry Pi 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/)** 
+- **[HX711 Load Cell Amplifier(1 KG)](https://www.amazon.com/dp/B0BLNQZRBD?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1)**
+- **[Load Cell](https://www.amazon.com/dp/B0BLNQZRBD?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1)** 
+- **Stepper Motor**
+- **[Stepper Hat B](https://www.waveshare.com/wiki/Stepper_Motor_HAT_(B)?srsltid=AfmBOorD0cHVk7AqhdQ46iFxuBOxcegc7QxJ7O0b3TRa4oe1HzmYGizS)**
 
 ---
 
@@ -69,8 +67,14 @@ sudo bin/feed
 
 - **Lingua Franca compiler** (`lfc`)
 - **GCC toolchain** (`gcc`) for the C target
-- **BCM2835 C Library** 
-- **HX711 C Library** 
+- **[WaveShare BCM2835 C Library](https://www.waveshare.com/wiki/Stepper_Motor_HAT_(B)#BCM2835)** 
+- **[MikeM BCM2835 C Library](https://www.airspayce.com/mikem/bcm2835/)** 
+- **[HX711 C Library](https://github.com/gandalf15/HX711)** 
+
+---
+## Mechanical Requirements
+- **Archimedes Screw** 
+- **Container** 
 
 ### Custom Library Modifications
 To ensure real-time safety and hardware stability on the ARM-based Raspberry Pi, the standard `hx711.c` library was heavily modified for this project:
